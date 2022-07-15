@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart ';
 
@@ -87,9 +89,44 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
   }
 
   void changeCards() {
-    setState(() {
-      isGameStarted = true;
-    });
+    setState(() => isGameStarted = true);
+
+    myCards = [];
+    dealerCards = [];
+
+    Random random = Random();
+
+    String cardOneKey =
+        playingCards.keys.elementAt(random.nextInt(playingCards.length));
+    playingCards.removeWhere((key, value) => key == cardOneKey);
+
+    String cardTwoKey = playingCards.keys.elementAt(random.nextInt(playingCards.length));
+    playingCards.removeWhere((key, value) => key == cardTwoKey);
+
+    String cardThreeKey =
+        playingCards.keys.elementAt(random.nextInt(playingCards.length));
+    playingCards.removeWhere((key, value) => key == cardThreeKey);
+
+    String cardFourKey = playingCards.keys.elementAt(random.nextInt(playingCards.length));
+    playingCards.removeWhere((key, value) => key == cardFourKey);
+
+    dealersFirstCard = cardOneKey;
+    dealersSecondCard = cardTwoKey;
+
+    playersFirstCard = cardThreeKey;
+    playersSecondCard = cardFourKey;
+
+    dealerCards.add(Image.asset(dealersFirstCard!));
+    dealerCards.add(Image.asset(dealersSecondCard!));
+
+    dealerScore =
+        deckOfCards[dealersSecondCard]! + deckOfCards[dealersFirstCard]!;
+
+    myCards.add(Image.asset(playersFirstCard!));
+    myCards.add(Image.asset(playersSecondCard!));
+
+    playerScore =
+        deckOfCards[playersFirstCard]! + deckOfCards[playersSecondCard]!;
   }
 
   void addCard() {}
@@ -106,30 +143,61 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
                     Column(
                       children: [
                         Text("Dealer score $dealerScore"),
-                        SizedBox(
+                        const SizedBox(
                           height: 20.0,
+                        ),
+                        SizedBox(
+                          height: 200.0,
+                          child: GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3),
+                              itemCount: dealerCards.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) =>
+                                  dealerCards[index]),
                         ),
                       ],
                     ),
                     Column(
                       children: [
                         Text("Player  score $playerScore"),
-                        SizedBox(
+                        const SizedBox(
                           height: 20.0,
+                        ),
+                        SizedBox(
+                          height: 200.0,
+                          child: GridView.builder(
+                              gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3),
+                              itemCount: myCards.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) =>
+                              myCards[index]),
                         ),
                       ],
                     ),
-                    Column(
-                      children: [
-                        MaterialButton(
-                          onPressed: addCard,
-                          child: Text("Another Card"),
-                        ),
-                        MaterialButton(
-                          onPressed: null,
-                          child: Text("Next Round"),
-                        )
-                      ],
+                    IntrinsicWidth(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          MaterialButton(
+                            onPressed: addCard,
+                            color: Colors.brown[200],
+                            child: const Text("Another Card"),
+                          ),
+                          const SizedBox(
+                            height: 20.0,
+                          ),
+                          MaterialButton(
+                            onPressed: () {},
+                            color: Colors.brown[200],
+                            child: const Text("Next Round"),
+                          )
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -140,6 +208,7 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
                 onPressed: () {
                   changeCards();
                 },
+                color: Colors.brown[200],
                 child: const Text("Start Game"),
               ),
             ),
